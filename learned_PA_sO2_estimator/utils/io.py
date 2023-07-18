@@ -11,8 +11,8 @@ def load_data(dataset_id, data_wavelengths):
         download_file(get_dataset_name(dataset_id))
     data = np.load(dataset_path)
     spectra = data["spectra"]
-    spectra = zero_pad_wavelengths(spectra, data_wavelengths)
     spectra = np.swapaxes(spectra, 0, 1)
+    spectra = zero_pad_wavelengths(spectra, data_wavelengths)
     spectra = spectra.reshape((len(spectra), len(spectra[0]), 1))
 
     spectra = tf.convert_to_tensor(spectra)
@@ -29,12 +29,10 @@ def zero_pad_wavelengths(spectra, data_wavelengths):
     """
 
     wavelengths = list(np.arange(700, 901, 5))
-    wl_mask = [wl in wavelengths for wl in data_wavelengths]
-    inv_wl_mask = np.invert(wl_mask)
-    spectra[inv_wl_mask, :] = np.nan
-    spectra = (spectra - np.nanmean(spectra, axis=0)[np.newaxis, :]) / np.nanstd(spectra, axis=0)[np.newaxis, :]
-    full_spectra = np.zeros((41, len(spectra[0])))
-    full_spectra[wl_mask, :] = spectra[wl_mask, :]
+    wl_mask = [wl in data_wavelengths for wl in wavelengths]
+    spectra = (spectra - np.nanmean(spectra, axis=1)[:, np.newaxis]) / np.nanstd(spectra, axis=1)[:, np.newaxis]
+    full_spectra = np.zeros((len(spectra), 41))
+    full_spectra[:, wl_mask] = spectra
     spectra = full_spectra
 
     return spectra
@@ -47,10 +45,7 @@ def convert_numpy_array(data, data_wavelengths):
         a list of length num_wavelengths containing wavelengths
     :return:
     """
-
     data = zero_pad_wavelengths(data, data_wavelengths)
-    data = np.swapaxes(data, 0, 1)
     data = data.reshape((len(data), len(data[0]), 1))
     data = tf.convert_to_tensor(data)
     return data
-
