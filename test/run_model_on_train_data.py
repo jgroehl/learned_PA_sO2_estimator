@@ -5,12 +5,12 @@ from learned_PA_sO2_estimator.estimate_sO2 import evaluate
 import matplotlib.pyplot as plt
 
 
-data = load_data("BASE")
+data = load_data("BASE", list(np.arange(700, 901, 5)))
 gt = np.load(get_dataset_path("BASE"))["oxygenation"]
 
 sO2 = evaluate(data, "BASE")
 
-plt.scatter(gt, sO2, alpha=0.01)
+plt.scatter(gt, sO2, alpha=0.002)
 plt.show()
 
 
