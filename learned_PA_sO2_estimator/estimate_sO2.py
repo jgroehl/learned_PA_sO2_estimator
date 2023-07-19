@@ -5,7 +5,7 @@ from learned_PA_sO2_estimator.utils import get_model_weights_path, get_model_wei
 from learned_PA_sO2_estimator.utils.file_downloader import download_file
 
 
-def evaluate(dataset, train_dataset_id, batch_size=50000):
+def evaluate(dataset, train_dataset_id, num_wavelengths, batch_size=500000):
     """
 
     :param dataset:
@@ -21,7 +21,9 @@ def evaluate(dataset, train_dataset_id, batch_size=50000):
         a numpy array in the same shape as the input array.
     """
 
-    num_samples, num_wavelengths, num_batches = np.shape(dataset)
+    print(f"Running learned sO2 estimates on {np.prod(np.shape(dataset))} spectra with training dataset {train_dataset_id}.")
+
+    num_samples, _, num_batches = np.shape(dataset)
 
     model_weights_path = get_model_weights_path(num_wavelengths, train_dataset_id)
 
@@ -33,6 +35,7 @@ def evaluate(dataset, train_dataset_id, batch_size=50000):
 
     results = []
     for i in range(num_samples // batch_size):
+        print(i)
         result = _model(dataset[i * batch_size:(i + 1) * batch_size])
         results.append(result.numpy())
     i = num_samples // batch_size
