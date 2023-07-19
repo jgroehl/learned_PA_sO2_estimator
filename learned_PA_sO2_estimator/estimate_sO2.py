@@ -10,8 +10,8 @@ def evaluate(dataset, train_dataset_id, num_wavelengths, batch_size=500000):
 
     :param dataset:
         This function assumes that _dataset is a numpy array with shape
-        (N, M), where N is the number of spectra and M is the number of
-        wavelengths.
+        (N, M), where N is the number of spectra and M has length 41 and
+        are the zero-padded input.
     :param train_dataset_id:
         The identifier of the training dataset that the model should be trained on for this analysis.
     :param batch_size:
@@ -21,7 +21,7 @@ def evaluate(dataset, train_dataset_id, num_wavelengths, batch_size=500000):
         a numpy array in the same shape as the input array.
     """
 
-    print(f"Running learned sO2 estimates on {np.prod(np.shape(dataset))} spectra with training dataset {train_dataset_id}.")
+    print(f"Running learned sO2 estimates on {np.prod(np.shape(dataset[:, 0, :]))} spectra with training dataset {train_dataset_id}.")
 
     num_samples, _, num_batches = np.shape(dataset)
 
